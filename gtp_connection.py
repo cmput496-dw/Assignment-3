@@ -13,6 +13,8 @@ from board_util import GoBoardUtil, BLACK, WHITE, EMPTY, BORDER, PASS, \
 import numpy as np
 import re
 
+POLICY = "random"
+
 class GtpConnection():
 
     def __init__(self, go_engine, board, debug_mode = False):
@@ -49,7 +51,8 @@ class GtpConnection():
             "gogui-rules_side_to_move": self.gogui_rules_side_to_move_cmd,
             "gogui-rules_board": self.gogui_rules_board_cmd,
             "gogui-rules_final_result": self.gogui_rules_final_result_cmd,
-            "gogui-analyze_commands": self.gogui_analyze_cmd
+            "gogui-analyze_commands": self.gogui_analyze_cmd,
+            "policy": self.policy_cmd,
         }
 
         # used for argument checking
@@ -346,6 +349,15 @@ class GtpConnection():
                      "pstring/Rules GameID/gogui-rules_game_id\n"
                      "pstring/Show Board/gogui-rules_board\n"
                      )
+
+    def policy_cmd(self,args):
+        if args[0] != "random" and args[0] != "rulebased":
+            self.respond("unknown policy")
+        else:
+            global POLICY
+            POLICY = args[0]
+            self.respond("policy set to " + POLICY)
+
 
 def point_to_coord(point, boardsize):
     """
