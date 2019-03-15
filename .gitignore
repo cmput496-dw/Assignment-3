@@ -1,0 +1,8 @@
+#Test files
+*.html
+*.dat
+custom*
+
+tests/
+
+
