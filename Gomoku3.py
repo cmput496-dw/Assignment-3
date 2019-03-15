@@ -10,8 +10,8 @@ class Gomoku3():
     def name(self):
         return "Simulation Player ({0} sim.)".format(self.numSimulations)
 
-    def genmove(self, state):
-        assert not state.endOfGame()
+    def genmove(self):
+        assert not self.check_game_end_gomoku()
         moves = GoBoardUtil.generate_legal_moves_gomoku(self.board)
         numMoves = len(moves)
         score = [0] * numMoves
@@ -22,7 +22,7 @@ class Gomoku3():
         bestIndex = score.index(max(score))
         best = moves[bestIndex]
         #print("Best move:", best, "score", score[best])
-        assert best in state.legalMoves()
+        assert best in GoBoardUtil.generate_legal_moves_gomoku(self.board)
         return best
 
     def simulate(self, state, move):
