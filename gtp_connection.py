@@ -376,11 +376,11 @@ class GtpConnection():
 
             original_board = self.board.copy()
 
-        returnstring = ""
+        returnstring = "Blockwin"
         for move in block_win_moves:
             move_coord = point_to_coord(move, self.board.size)
             move_as_string = format_point(move_coord)
-            string = "Blockwin" + " " + move_as_string
+            string = " " + move_as_string
             returnstring += string
 
         self.respond(returnstring)
