@@ -454,7 +454,7 @@ def check_block_win(board):
     
     win_moves = list()
     block_win_moves = list()
-    open_four = list()
+    open_four_moves = list()
     block_open_four = list()
 
     returned_move_list = list()
@@ -467,6 +467,7 @@ def check_block_win(board):
 
     # check to see how many situations exist beforehand
     original_block_situations = original_board.check_block_win_gomoku(color)
+    original_open_situations = original_board.check_open_four_gomoku(color)
         
     for move in moves:
 
@@ -490,7 +491,11 @@ def check_block_win(board):
 
         #open four
         if (not found_win and not found_block_win):
-            x = 1+1
+            check_open_situations = board_copy.check_open_four_gomoku(color)
+            if(check_open_situations < original_open_situations):
+                open_four_moves.append(move)
+                found_open_four = True
+            
 
         #block open four
         if (not found_win and not found_block_win and not found_open_four):
@@ -506,6 +511,14 @@ def check_block_win(board):
     elif (found_block_win):
         returnstring = "BlockWin"
         returned_move_list = block_win_moves
+        
+    elif (found_open_four):
+        returnstring = "OpenFour"
+        returned_move_list = open_four_moves
+
+    else:
+        returnstring = "Random"
+        returned_move_list = moves
             
     return returnstring, returned_move_list
 

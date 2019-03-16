@@ -523,3 +523,98 @@ class SimpleGoBoard(object):
             newcolor = WHITE
 
         return newcolor
+
+
+    ###########################################################################
+    #Check Open Four
+    ###########################################################################
+    def check_open_four_gomoku(self, color):
+        """
+            Check if the game ends for the game of Gomoku.
+            """
+        points = where1d(self.board == color)
+
+        num_open_situations = 0
+
+        #color has O.OO
+        for point in points:
+            if self.point_check_open_four_gomoku(point):
+                num_open_situations += 1
+
+        return num_open_situations
+    ###########################################################################
+
+    ###########################################################################
+    #Check Point Open Four
+    ###########################################################################
+    def point_check_open_four_gomoku(self, point):
+        """
+            Check if the point causes the game end for the game of Gomoko.
+            """
+        # check horizontal
+        if self._point_direction_check_open(point, 1):
+            return True
+        
+        # check vertical
+        if self._point_direction_check_open(point, self.NS):
+            return True
+        
+        # check y=x
+        if self._point_direction_check_open(point, self.NS + 1):
+            return True
+        
+        # check y=-x
+        if self._point_direction_check_open(point, self.NS - 1):
+            return True
+        
+        return False
+    ###########################################################################
+
+    ###########################################################################
+    #Check Open Point Direction
+    ###########################################################################
+    def _point_direction_check_open(self, point, shift):
+        """
+        Check if the point has connect5 condition in a direction
+        for the game of Gomoko.
+        """
+        color = self.board[point]
+        count = 1
+        empty_count = 0
+        t_empty_count = 0
+        d = shift
+        p = point
+        while True:
+            p = p + d
+            if self.board[p] == color:
+                count = count + 1
+            elif self.board[p] == EMPTY:
+                empty_count += 1
+                if empty_count > 1:
+                    break
+            else:
+                break
+
+        if count >= 3 and empty_count >= 1:
+            return True
+
+        count = 1
+        empty_count = 0
+        d = -d
+        p = point
+        while True:
+            p = p + d
+            if self.board[p] == color:
+                count = count + 1
+            elif self.board[p] == EMPTY:
+                empty_count += 1
+                if empty_count > 1:
+                    break
+            else:
+                break
+            
+        if count >= 3 and empty_count >= 1:
+            return True
+
+        return False
+    ###########################################################################
