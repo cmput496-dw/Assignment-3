@@ -360,30 +360,11 @@ class GtpConnection():
             self.respond("policy set to " + POLICY)
 
     def policy_moves(self,args):
-
-        color = self.board.current_player
-        original_board = self.board.copy()
-        moves = GoBoardUtil.generate_legal_moves(self.board, color)
-        block_win_moves = list()
+        blockwin = check_block_win(self.board)
+        if blockwin != "":
+            self.respond(blockwin)
         
-        for move in moves:
-            original_board.play_move_gomoku(move, color)
 
-            #will be true if 
-            is_block_win = original_board.check_block_win_gomoku(color)
-            if(is_block_win):
-                block_win_moves.append(move)
-
-            original_board = self.board.copy()
-
-        returnstring = "Blockwin"
-        for move in block_win_moves:
-            move_coord = point_to_coord(move, self.board.size)
-            move_as_string = format_point(move_coord)
-            string = " " + move_as_string
-            returnstring += string
-
-        self.respond(returnstring)
 
 
 def point_to_coord(point, boardsize):
@@ -442,4 +423,36 @@ def color_to_int(c):
     """convert character to the appropriate integer code"""
     color_to_int = {"b": BLACK , "w": WHITE, "e": EMPTY, 
                     "BORDER": BORDER}
-    return color_to_int[c] 
+    return color_to_int[c]
+
+#################################################################################
+#Check Block Win
+################################################################################
+def check_block_win(board):
+
+    color = board.current_player
+    original_board = board.copy()
+    moves = GoBoardUtil.generate_legal_moves(board, color)
+    block_win_moves = list()
+        
+    for move in moves:
+        original_board.play_move_gomoku(move, color)
+        
+        #will be true if 
+        is_block_win = original_board.check_block_win_gomoku(color)
+        if(is_block_win):
+            block_win_moves.append(move)
+
+        original_board = board.copy()
+
+    returnstring = "Blockwin"
+    for move in block_win_moves:
+        move_coord = point_to_coord(move, board.size)
+        move_as_string = format_point(move_coord)
+        string = " " + move_as_string
+        returnstring += string
+
+    if not block_win_moves:
+        return ""
+    else:
+        return returnstring
