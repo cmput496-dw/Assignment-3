@@ -390,7 +390,6 @@ class SimpleGoBoard(object):
         for the game of Gomoko.
         """
         color = self.board[point]
-        mycolor = opposite_color(self.board[point])
         count = 1
         empty_count = 0
         t_empty_count = 0

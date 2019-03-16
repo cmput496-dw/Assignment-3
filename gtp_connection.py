@@ -367,14 +367,14 @@ class GtpConnection():
         block_win_moves = list()
         
         for move in moves:
-            self.board.play_move_gomoku(move, color)
+            original_board.play_move_gomoku(move, color)
 
             #will be true if 
-            is_block_win = self.board.check_block_win_gomoku(color)
+            is_block_win = original_board.check_block_win_gomoku(color)
             if(is_block_win):
                 block_win_moves.append(move)
 
-            self.board = original_board
+            original_board = self.board.copy()
 
         returnstring = ""
         for move in block_win_moves:
