@@ -449,7 +449,7 @@ class SimpleGoBoard(object):
         
         # check y=-x
         if self._point_direction_check_connect_gomoko(point, self.NS - 1):
-            return True
+            return True                   
         
         return False
 
@@ -522,4 +522,3 @@ class SimpleGoBoard(object):
             newcolor = WHITE
 
         return newcolor
-    
