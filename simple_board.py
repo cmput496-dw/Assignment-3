@@ -379,6 +379,57 @@ class SimpleGoBoard(object):
                 break
         assert count <= 5
         return count == 5
+
+    
+    ###########################################################################
+    #Check Block Win Point Direction
+    ###########################################################################
+    def _point_direction_check_block_win(self, point, shift):
+        """
+        Check if the point has connect5 condition in a direction
+        for the game of Gomoko.
+        """
+        color = self.board[point]
+        mycolor = opposite_color(self.board[point])
+        count = 1
+        empty_count = 0
+        t_empty_count = 0
+        d = shift
+        p = point
+        while True:
+            p = p + d
+            if self.board[p] == color:
+                count = count + 1
+            elif self.board[p] == EMPTY:
+                empty_count += 1
+                if empty_count > 1:
+                    break
+            else:
+                break
+
+        if count >= 4:
+            return True
+
+        count = 1
+        empty_count = 0
+        d = -d
+        p = point
+        while True:
+            p = p + d
+            if self.board[p] == color:
+                count = count + 1
+            elif self.board[p] == EMPTY:
+                empty_count += 1
+                if empty_count > 1:
+                    break
+            else:
+                break
+            
+        if count >= 4:
+            return True
+
+        return False
+    ###########################################################################
     
     def point_check_game_end_gomoku(self, point):
         """
@@ -401,6 +452,50 @@ class SimpleGoBoard(object):
             return True
         
         return False
+
+    ###########################################################################
+    #Check Point Block Win
+    ###########################################################################
+    def point_check_block_win_gomoku(self, point):
+        """
+            Check if the point causes the game end for the game of Gomoko.
+            """
+        # check horizontal
+        if self._point_direction_check_block_win(point, 1):
+            return True
+        
+        # check vertical
+        if self._point_direction_check_block_win(point, self.NS):
+            return True
+        
+        # check y=x
+        if self._point_direction_check_block_win(point, self.NS + 1):
+            return True
+        
+        # check y=-x
+        if self._point_direction_check_block_win(point, self.NS - 1):
+            return True
+        
+        return False
+    ###########################################################################
+
+    ###########################################################################
+    #Check Block Win
+    ###########################################################################
+    def check_block_win_gomoku(self, color):
+        """
+            Check if the game ends for the game of Gomoku.
+            """
+        color = self.opposite_color(color)
+        points = where1d(self.board == color)
+
+        #color has OO.OO
+        for point in points:
+            if self.point_check_block_win_gomoku(point):
+                return False
+
+        return True
+    ###########################################################################
     
     def check_game_end_gomoku(self):
         """
@@ -418,3 +513,13 @@ class SimpleGoBoard(object):
                 return True, BLACK
 
         return False, None
+
+    def opposite_color(self, color):
+        newcolor = None
+        if (color == WHITE):
+            newcolor = BLACK
+        elif (color == BLACK):
+            newcolor = WHITE
+
+        return newcolor
+    

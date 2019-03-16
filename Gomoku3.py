@@ -1,3 +1,7 @@
+#!/usr/bin/python3
+#/usr/local/bin/python3
+# Set the path to your python3 above
+
 #Simulation-based player for Gomoku
 
 from gtp_connection import GtpConnection
@@ -40,3 +44,5 @@ class Gomoku3():
         if state.toPlay == WHITE:
             eval = 1 - eval
         return eval
+
+Gomoku3()

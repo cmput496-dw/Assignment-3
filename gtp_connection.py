@@ -53,6 +53,7 @@ class GtpConnection():
             "gogui-rules_final_result": self.gogui_rules_final_result_cmd,
             "gogui-analyze_commands": self.gogui_analyze_cmd,
             "policy": self.policy_cmd,
+            "policy_moves": self.policy_moves
         }
 
         # used for argument checking
@@ -357,6 +358,32 @@ class GtpConnection():
             global POLICY
             POLICY = args[0]
             self.respond("policy set to " + POLICY)
+
+    def policy_moves(self,args):
+
+        color = self.board.current_player
+        original_board = self.board.copy()
+        moves = GoBoardUtil.generate_legal_moves(self.board, color)
+        block_win_moves = list()
+        
+        for move in moves:
+            self.board.play_move_gomoku(move, color)
+
+            #will be true if 
+            is_block_win = self.board.check_block_win_gomoku(color)
+            if(is_block_win):
+                block_win_moves.append(move)
+
+            self.board = original_board
+
+        returnstring = ""
+        for move in block_win_moves:
+            move_coord = point_to_coord(move, self.board.size)
+            move_as_string = format_point(move_coord)
+            string = "Blockwin" + " " + move_as_string
+            returnstring += string
+
+        self.respond(returnstring)
 
 
 def point_to_coord(point, boardsize):
