@@ -82,7 +82,7 @@ play b D7
 play w A5
 play b G7
 70 policy_moves
-#?[OpenFour C2 C6]
+#?[OpenFour A2 A6]
 
 clear_board
 play b A1
@@ -92,7 +92,7 @@ play w D4
 play b A7
 play w E4
 play b G7
-70 policy_moves
+80 policy_moves
 #?[OpenFour B4 F4]
 
 clear_board
@@ -103,7 +103,7 @@ play w D4
 play b A7
 play w E5
 play b G4
-70 policy_moves
+90 policy_moves
 #?[OpenFour B2 F6]
 
 play w C6
@@ -112,5 +112,5 @@ play w D6
 play b C4
 play w E6
 play b A4
-80 policy_moves
+100 policy_moves
 #?[OpenFour B2 B6 F6]
