@@ -398,7 +398,7 @@ class SimpleGoBoard(object):
         
         # check y=-x
         if self._point_direction_check_connect_gomoko(point, self.NS - 1):
-            return True
+            return True                   
         
         return False
     
@@ -417,4 +417,4 @@ class SimpleGoBoard(object):
             if self.point_check_game_end_gomoku(point):
                 return True, BLACK
 
-        return False, None
+        return False, None    
