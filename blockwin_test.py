@@ -7,7 +7,7 @@ play b A7
 play w D5
 play b G7
 play w D6
-policy_moves
+10 policy_moves
 #?[BlockWin D4]
 
 clear_board
@@ -19,7 +19,7 @@ play b A7
 play w F5
 play b G7
 play w G6
-policy_moves
+20 policy_moves
 #?[BlockWin E4]
 
 clear_board
@@ -31,7 +31,7 @@ play b A7
 play w E2
 play b G7
 play w F2
-policy_moves
+30 policy_moves
 #?[BlockWin D2]
 
 clear_board
@@ -51,5 +51,24 @@ play b A6
 play w D5
 play b G6
 play w E4
-policy_moves
+40 policy_moves
 #?[BlockWin D1 F3]
+
+clear_board
+play B B1
+play W C2
+play B B2
+play W C3
+play B B3
+play W C4
+play B B4
+
+50 policy_moves
+#?[BlockWin B5]
+
+play w B5
+play b A1
+play w C5
+play b A2
+60 policy_moves
+#?[Win C1 C6]

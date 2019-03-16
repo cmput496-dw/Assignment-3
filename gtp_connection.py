@@ -496,7 +496,6 @@ def check_block_win(board):
         if (not found_win and not found_block_win and not found_open_four):
             x = 1+1
 
-        print("popping")
         board = undo()
 
     
