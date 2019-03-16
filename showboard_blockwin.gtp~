@@ -8,7 +8,7 @@ play w D5
 play b G7
 play w D6
 policy_moves
-#?[BlockWin D4]
+#?[Blockwin D4]
 
 clear_board
 play b A1
@@ -20,7 +20,7 @@ play w F5
 play b G7
 play w G6
 policy_moves
-#?[BlockWin E4]
+#?[Blockwin E4]
 
 clear_board
 play b A1
@@ -32,7 +32,7 @@ play w E2
 play b G7
 play w F2
 policy_moves
-#?[BlockWin D2]
+#?[Blockwin D2]
 
 clear_board
 play b A1
@@ -52,4 +52,4 @@ play w D5
 play b G6
 play w E4
 policy_moves
-#?[BlockWin D1 F3]
+#?[Blockwin D1 F3]

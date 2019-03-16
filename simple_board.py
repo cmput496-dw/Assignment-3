@@ -406,7 +406,7 @@ class SimpleGoBoard(object):
             else:
                 break
 
-        if count >= 4:
+        if count >= 4 and empty_count >= 1:
             return True
 
         count = 1
@@ -424,7 +424,7 @@ class SimpleGoBoard(object):
             else:
                 break
             
-        if count >= 4:
+        if count >= 4 and empty_count >= 1:
             return True
 
         return False
@@ -488,12 +488,14 @@ class SimpleGoBoard(object):
         color = self.opposite_color(color)
         points = where1d(self.board == color)
 
+        num_block_situations = 0
+
         #color has OO.OO
         for point in points:
             if self.point_check_block_win_gomoku(point):
-                return False
+                num_block_situations += 1
 
-        return True
+        return num_block_situations
     ###########################################################################
     
     def check_game_end_gomoku(self):

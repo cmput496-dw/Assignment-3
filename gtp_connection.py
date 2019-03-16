@@ -14,6 +14,7 @@ import numpy as np
 import re
 
 POLICY = "random"
+STACK = list()
 
 class GtpConnection():
 
@@ -360,9 +361,16 @@ class GtpConnection():
             self.respond("policy set to " + POLICY)
 
     def policy_moves(self,args):
-        blockwin = check_block_win(self.board)
-        if blockwin != "":
-            self.respond(blockwin)
+        movetype, moves = check_block_win(self.board)
+
+        returnstring = movetype
+        for move in moves:
+            move_coord = point_to_coord(move, self.board.size)
+            move_as_string = format_point(move_coord)
+            string = " " + move_as_string
+            returnstring += string
+
+        self.respond(returnstring)
         
 
 
@@ -426,6 +434,16 @@ def color_to_int(c):
     return color_to_int[c]
 
 #################################################################################
+#Check Wins
+################################################################################
+def check_wins(board):
+    game_end, winner = self.board.check_game_end_gomoku()
+
+    color = board.current_player
+    original_board = board.copy
+
+
+#################################################################################
 #Check Block Win
 ################################################################################
 def check_block_win(board):
@@ -433,26 +451,68 @@ def check_block_win(board):
     color = board.current_player
     original_board = board.copy()
     moves = GoBoardUtil.generate_legal_moves(board, color)
+    
+    win_moves = list()
     block_win_moves = list()
+    open_four = list()
+    block_open_four = list()
+
+    returned_move_list = list()
+
+    # initially set all switches to false
+    found_win = False
+    found_block_win = False
+    found_open_four = False
+    found_block_open_four = False
+
+    # check to see how many situations exist beforehand
+    original_block_situations = original_board.check_block_win_gomoku(color)
         
     for move in moves:
-        original_board.play_move_gomoku(move, color)
+
+        board_copy = board.copy()
+        #STACK.append(board_copy.copy())
+        save(board)
+        board_copy.play_move_gomoku(move, color)
+
+        # If win, update win
+        game_end, winner = board_copy.check_game_end_gomoku()
+        if (game_end):
+            win_moves.append(move)
+            found_win = True
         
-        #will be true if 
-        is_block_win = original_board.check_block_win_gomoku(color)
-        if(is_block_win):
-            block_win_moves.append(move)
+        # If blockwin, update blockwin
+        if (not found_win):
+            check_block_situations = board_copy.check_block_win_gomoku(color)
+            if(check_block_situations < original_block_situations):
+                block_win_moves.append(move)
+                found_block_win = True
 
-        original_board = board.copy()
+        #open four
+        if (not found_win and not found_block_win):
+            x = 1+1
 
-    returnstring = "Blockwin"
-    for move in block_win_moves:
-        move_coord = point_to_coord(move, board.size)
-        move_as_string = format_point(move_coord)
-        string = " " + move_as_string
-        returnstring += string
+        #block open four
+        if (not found_win and not found_block_win and not found_open_four):
+            x = 1+1
 
-    if not block_win_moves:
-        return ""
-    else:
-        return returnstring
+        print("popping")
+        board = undo()
+
+    
+    if (found_win):
+        returnstring = "Win"
+        returned_move_list = win_moves
+
+    elif (found_block_win):
+        returnstring = "BlockWin"
+        returned_move_list = block_win_moves
+            
+    return returnstring, returned_move_list
+
+
+def save(board):
+    STACK.append(board.copy())
+
+def undo():
+    return STACK.pop()
