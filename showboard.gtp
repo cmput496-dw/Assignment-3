@@ -1,4 +1,5 @@
 boardsize 7
+policy rule_based
 clear_board
 play B A7
 play W B7
@@ -47,4 +48,4 @@ play W F2
 play B E2
 play W G2
 10 showboard
-#?[OpenFour C1]
+#?[]

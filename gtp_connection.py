@@ -15,6 +15,7 @@ import re
 
 POLICY = "random"
 STACK = list()
+STACK1 = list()
 
 class GtpConnection():
 
@@ -263,14 +264,51 @@ class GtpConnection():
             else:
                 self.respond("resign")
             return
-        move = self.go_engine.get_move(self.board, color)
-        if move == PASS:
+        moves = GoBoardUtil.generate_legal_moves_gomoku(self.board)
+
+
+        #IF RANDOM
+        if (POLICY == "random"):
+            best_move = None
+            best_ratio = 0
+            for move in moves:
+                wins = 0
+                if best_move == None:
+                    best_move = move
+                for i in range(0,10):
+                    if random_simulation(self.board.copy(), color, color):
+                        wins += 1
+
+                if (wins/10) > best_ratio:
+                    best_move = move
+                    best_ratio = (wins/10)
+
+        #IF RULES
+        elif (POLICY == "rule_based"):
+            best_move = None
+            best_ratio = 0
+            for move in moves:
+                temp_board = self.board.copy()
+                temp_board.play_move_gomoku(move, color)
+                wins = 0
+                if best_move == None:
+                    best_move = move
+                for i in range(0,10):
+                    outcome = rules_simulation(temp_board.copy(), color, GoBoardUtil.opponent(color))
+                    wins += outcome
+
+                if (wins/10) > best_ratio:
+                    best_move = move
+                    best_ratio = (wins/10)
+            
+        
+        if best_move == PASS:
             self.respond("pass")
             return
-        move_coord = point_to_coord(move, self.board.size)
+        move_coord = point_to_coord(best_move, self.board.size)
         move_as_string = format_point(move_coord)
-        if self.board.is_legal_gomoku(move, color):
-            self.board.play_move_gomoku(move, color)
+        if self.board.is_legal_gomoku(best_move, color):
+            self.board.play_move_gomoku(best_move, color)
             self.respond(move_as_string)
         else:
             self.respond("illegal move: {}".format(move_as_string))
@@ -353,7 +391,7 @@ class GtpConnection():
                      )
 
     def policy_cmd(self,args):
-        if args[0] != "random" and args[0] != "rulebased":
+        if args[0] != "random" and args[0] != "rule_based":
             self.respond("unknown policy")
         else:
             global POLICY
@@ -364,12 +402,24 @@ class GtpConnection():
         movetype, moves = check_block_win(self.board)
 
         returnstring = movetype
+        move_strings = list()
+
+        #if len(moves) == 0:
+            #self.respond("")
+
         for move in moves:
             move_coord = point_to_coord(move, self.board.size)
             move_as_string = format_point(move_coord)
-            string = " " + move_as_string
+            move_strings.append(move_as_string)
+            
+        move_strings.sort()
+        for move_string in move_strings:
+            string = " " + move_string
             returnstring += string
 
+        if returnstring == "Random":
+            returnstring = ""
+            
         self.respond(returnstring)
         
 
@@ -446,16 +496,17 @@ def check_wins(board):
 #################################################################################
 #Check Block Win
 ################################################################################
-def check_block_win(board):
+def check_block_win(board, color=None):
 
-    color = board.current_player
+    if color == None:
+        color = board.current_player
     original_board = board.copy()
-    moves = GoBoardUtil.generate_legal_moves(board, color)
+    moves = GoBoardUtil.generate_legal_moves_gomoku(board)
     
     win_moves = list()
     block_win_moves = list()
     open_four_moves = list()
-    block_open_four = list()
+    block_open_four_moves = list()
 
     returned_move_list = list()
 
@@ -468,6 +519,7 @@ def check_block_win(board):
     # check to see how many situations exist beforehand
     original_block_situations = original_board.check_block_win_gomoku(color)
     original_open_situations = original_board.check_open_four_gomoku(color)
+    original_block_open_situations = original_board.check_block_open_four_gomoku(color)
         
     for move in moves:
 
@@ -492,14 +544,17 @@ def check_block_win(board):
         #open four
         if (not found_win and not found_block_win):
             check_open_situations = board_copy.check_open_four_gomoku(color)
-            if(check_open_situations < original_open_situations):
+            if(check_open_situations > original_open_situations):
                 open_four_moves.append(move)
                 found_open_four = True
             
 
         #block open four
         if (not found_win and not found_block_win and not found_open_four):
-            x = 1+1
+            check_block_open_situations = board_copy.check_block_open_four_gomoku(color)
+            if (check_block_open_situations < original_block_open_situations):
+                block_open_four_moves.append(move)
+                found_block_open_four = True
 
         board = undo()
 
@@ -516,6 +571,10 @@ def check_block_win(board):
         returnstring = "OpenFour"
         returned_move_list = open_four_moves
 
+    elif (found_block_open_four):
+        returnstring = "BlockOpenFour"
+        returned_move_list = block_open_four_moves
+
     else:
         returnstring = "Random"
         returned_move_list = moves
@@ -528,3 +587,60 @@ def save(board):
 
 def undo():
     return STACK.pop()
+
+
+
+def random_simulation(board, original_color, color):
+
+    #check base case
+    game_end, winner = board.check_game_end_gomoku()
+    if game_end:
+        if winner == original_color:
+            return True
+    move = GoBoardUtil.generate_random_move_gomoku(board)
+    if move == PASS:
+        return False
+    
+    #save to stack
+    STACK.append(board.copy())
+    
+    #play move
+    board.play_move_gomoku(move, color)
+    status = random_simulation(board.copy(), original_color, GoBoardUtil.opponent(color))
+
+    #pop from stack
+    board = STACK.pop()
+
+    return status
+
+
+def rules_simulation(board, original_color, color):
+
+    #check base case
+    game_end, winner = board.check_game_end_gomoku()
+    if game_end:
+        if winner == original_color:
+            return 1
+        else:
+            return 0
+    #if board is empty, return Loss
+    string, moves = check_block_win(board.copy(), color)
+    if len(moves) == 0:
+        return 0.5
+
+    move = moves.pop()
+    
+    if move == PASS:
+        return 0.5
+    
+    #save to stack
+    #STACK1.append(board.copy())
+    
+    #play move
+    board.play_move_gomoku(move, color)
+    status = rules_simulation(board, original_color, GoBoardUtil.opponent(color))
+
+    #pop from stack
+    #board = STACK1.pop()
+
+    return status

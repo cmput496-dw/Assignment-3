@@ -1,0 +1,41 @@
+
+policy rule_based
+clear_board
+play B B1
+play W C2
+play B B2
+play W C3
+play B B3
+play W C4
+play B B4
+
+70 policy_moves
+#?[BlockWin B5]
+
+80 genmove W
+#?[b5|B5]
+
+play B A1
+90 policy_moves
+#?[OpenFour C5]
+play W C5
+play B A2
+100 policy_moves
+#?[Win C1 C6]
+110 genmove W
+#?[C1|C6]
+
+clear_board
+boardsize 8
+play B D2
+play W A2
+play B D3
+play W A3
+play B D4
+
+120 policy_moves
+#?[BlockOpenFour D1 D5]
+
+boardsize 6
+130 policy_moves
+#?[Random A1 A2 A3 A4 A5 A6 B1 B2 B3 B4 B5 B6 C1 C2 C3 C4 C5 C6 D1 D2 D3 D4 D5 D6 E1 E2 E3 E4 E5 E6 F1 F2 F3 F4 F5 F6] 

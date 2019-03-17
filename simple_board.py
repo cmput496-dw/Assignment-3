@@ -579,42 +579,144 @@ class SimpleGoBoard(object):
         for the game of Gomoko.
         """
         color = self.board[point]
-        count = 1
-        empty_count = 0
-        t_empty_count = 0
+        l_count = 1
+        r_count = 1
+        l_empty_count = 0
+        r_empty_count = 0
         d = shift
         p = point
         while True:
             p = p + d
             if self.board[p] == color:
-                count = count + 1
-            elif self.board[p] == EMPTY:
-                empty_count += 1
-                if empty_count > 1:
+                l_count = l_count + 1
+                if l_count > 4:
                     break
+            elif self.board[p] == EMPTY:
+                l_empty_count = 1
+                break
             else:
                 break
 
-        if count >= 3 and empty_count >= 1:
-            return True
-
-        count = 1
-        empty_count = 0
         d = -d
         p = point
         while True:
             p = p + d
             if self.board[p] == color:
-                count = count + 1
-            elif self.board[p] == EMPTY:
-                empty_count += 1
-                if empty_count > 1:
+                r_count = r_count + 1
+                if r_count > 4:
                     break
+            elif self.board[p] == EMPTY:
+                r_empty_count = 1
+                break
             else:
                 break
             
-        if count >= 3 and empty_count >= 1:
+        if r_count >= 4 and r_empty_count == 1 and l_empty_count == 1:
+            return True
+        elif l_count >= 4 and l_empty_count == 1 and r_empty_count == 1:
             return True
 
         return False
     ###########################################################################
+
+    ###########################################################################
+    #Check Block Open Four
+    ###########################################################################
+    def check_block_open_four_gomoku(self, color):
+        """
+            Check if the game ends for the game of Gomoku.
+            """
+        color = self.opposite_color(color)
+        points = where1d(self.board == color)
+
+        num_block_open_situations = 0
+
+        #color has O.OO
+        for point in points:
+            if self.point_check_block_open_four_gomoku(point):
+                num_block_open_situations += 1
+
+        return num_block_open_situations
+    ###########################################################################
+
+    ###########################################################################
+    #Check Point Block Open Four
+    ###########################################################################
+    def point_check_block_open_four_gomoku(self, point):
+        """
+            Check if the point causes the game end for the game of Gomoko.
+            """
+        # check horizontal
+        if self._point_direction_check_block_open(point, 1):
+            return True
+        
+        # check vertical
+        if self._point_direction_check_block_open(point, self.NS):
+            return True
+        
+        # check y=x
+        if self._point_direction_check_block_open(point, self.NS + 1):
+            return True
+        
+        # check y=-x
+        if self._point_direction_check_block_open(point, self.NS - 1):
+            return True
+        
+        return False
+    ###########################################################################
+
+    ###########################################################################
+    #Check Block Open Four Direction
+    ###########################################################################
+    def _point_direction_check_block_open(self, point, shift):
+        """
+        Check if the point has connect5 condition in a direction
+        for the game of Gomoko.
+        """
+        color = self.board[point]
+        l_count = 1
+        r_count = 1
+        l_empty_count = 0
+        r_empty_count = 0
+        d = shift
+        p = point
+        while True:
+            p = p + d
+            if self.board[p] == color:
+                l_count = l_count + 1
+                if l_count > 3:
+                    break
+            elif self.board[p] == EMPTY:
+                #if l_count < 3:
+                    #break
+                l_empty_count += 1
+                if l_empty_count > 1:
+                    break
+            else:
+                break
+
+        d = -d
+        p = point
+        while True:
+            p = p + d
+            if self.board[p] == color:
+                r_count = r_count + 1
+                if r_count > 3:
+                    break
+            elif self.board[p] == EMPTY:
+                #if r_count < 3:
+                    #break
+                r_empty_count += 1
+                if r_empty_count > 1:
+                    break
+            else:
+                break
+            
+        if r_count >= 3 and r_empty_count >= 1 and l_empty_count >= 1:
+            return True
+        elif l_count >= 3 and l_empty_count >= 1 and r_empty_count >= 1:
+            return True
+
+        return False
+    ###########################################################################
+    
